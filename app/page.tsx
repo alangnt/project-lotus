@@ -1,113 +1,491 @@
+"use client";
+
 import Image from "next/image";
 
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useState, useEffect, useRef } from "react";
+
+import { motion, AnimatePresence } from "framer-motion";
+
+import { Sun, Moon, Play, RotateCcw, Pause, LogIn, X, Pencil } from "lucide-react";
+
+interface User {
+  id: number;
+  email: string;
+  username: string;
+  points: string;
+  first_name: string;
+  last_name: string;
+  avatar_url: string;
+}
+
 export default function Home() {
+  const [seconds, setSeconds] = useState(0);
+  const [minutes, setMinutes] = useState(25);
+  const [isRunning, setIsRunning] = useState(false);
+  const [theme, setTheme] = useState("light");
+  const bell = useRef<HTMLAudioElement | null>(null);
+
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [loginWindow, setLoginWindow] = useState(false);
+  const [signupWindow, setSignupWindow] = useState(false);
+  const [profileWindow, setProfileWindow] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [noMatch, setNoMatch] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
+  const [editProfile, setEditProfile] = useState(false);
+
+  const [formDataLogin, setFormDataLogin] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [formDataSignup, setFormDataSignup] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [formDataUpdateUser, setFormDataUpdateUser] = useState({
+    first_name: "",
+    last_name: "",
+    avatar_url: "",
+  });
+
+  const handleGetUser = async (id: number) => {
+
+    try {
+      const response = await fetch(`/api/user?id=${id}`);
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  }
+
+  useEffect(() => {
+    bell.current = new Audio('/sounds/bell.wav');
+  }, []);
+  
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRunning) {
+      interval = setInterval(() => {
+        if (seconds > 0) {
+          setSeconds(seconds - 1);
+        } else if (minutes > 0) {
+          setMinutes(minutes - 1);
+          setSeconds(59);
+        } else {
+          bell.current?.play();
+          handlePoints();
+          handleReset();
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning, minutes, seconds]);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      setAuthenticated(true);
+      setUser({
+        id: session?.user?.id as number,
+        email: session?.user?.email as string,
+        username: session?.user?.username as string,
+        points: session?.user?.points as string,
+        first_name: session?.user?.first_name as string,
+        last_name: session?.user?.last_name as string,
+        avatar_url: session?.user?.avatar_url as string,
+      });
+
+      handleGetUser(session?.user?.id as number);
+    } else {
+      setAuthenticated(false);
+      setUser(null);
+    }
+  }, [status, session]);
+
+  const handleCountdown = () => {
+    setIsRunning(!isRunning);
+  };
+
+  const handleReset = () => {
+    setMinutes(25);
+    setSeconds(0);
+    setIsRunning(false);
+  };
+
+  const handlePoints = async () => {
+    if (authenticated) {
+      try {
+        const response = await fetch(`/api/points?id=${session?.user?.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            points: 100,
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(prevUser => prevUser ? {...prevUser, points: data.points} : null);
+        } else {
+          console.error('Error fetching points:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching points:', error);
+      }
+    } else {
+      setLoginWindow(true);
+    }
+  }
+
+  const handleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  const handleSwitchToSignup = () => {
+    setLoginWindow(false);
+    setSignupWindow(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setLoginWindow(true);
+    setSignupWindow(false);
+  };
+
+  const handleFormChangeSignUp = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormDataSignup({ ...formDataSignup, [e.target.name]: e.target.value });
+  }
+
+  const handleFormChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormDataLogin({ ...formDataLogin, [e.target.name]: e.target.value });
+  }
+
+  const handleFormChangeUpdateUser = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormDataUpdateUser({ ...formDataUpdateUser, [e.target.name]: e.target.value });
+  }
+
+  const handlePasswordNoMatch = () => {
+    setNoMatch(true);
+    
+    setTimeout(() => {
+        setNoMatch(false);
+    }, 3000);
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = await signIn('credentials', {
+        email: formDataLogin.email,
+        password: formDataLogin.password,
+        redirect: false,
+    });
+
+    if (result?.ok) {
+        setAuthenticated(true);
+        setLoginWindow(false);
+    } else {
+      setErrorMessage(true);
+
+      setTimeout(() => {
+        setErrorMessage(false);
+      }, 3000);
+    }
+  }
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+      if (formDataSignup.password !== formDataSignup.confirmPassword) {
+          handlePasswordNoMatch();
+          return;
+      }
+    
+      try {
+          const response = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                username: formDataSignup.username,
+                email: formDataSignup.email,
+                password: formDataSignup.password,
+                confirmPassword: formDataSignup.confirmPassword,
+              })
+          });
+  
+          if (response.ok) {
+              const result = await signIn('credentials', {
+                username: formDataSignup.username,
+                email: formDataSignup.email,
+                password: formDataSignup.password,
+                redirect: false,
+              });
+          
+              if (result?.ok) {
+                  setAuthenticated(true);
+                  setSignupWindow(false);
+              }
+
+              const data = await response.json();
+
+              const { email, username } = data;
+              setFormDataSignup({ ...formDataSignup, email, username });
+          } else {
+              const errorData = await response.json();
+              console.error('Error signing up:', errorData.message);
+          }
+        } catch (error) {
+        console.error('Error signing up:', error);
+      }
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('username', user?.username || '');
+    formData.append('first_name', formDataUpdateUser.first_name);
+    formData.append('last_name', formDataUpdateUser.last_name);
+
+    const fileInput = document.getElementById('avatar') as HTMLInputElement;
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      formData.append('avatar_url', fileInput.files[0]);
+    }
+
+    try {
+      const response = await fetch('/api/update-user', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(prevUser => prevUser ? {...prevUser, ...data} : null);
+        setEditProfile(false);
+        handleGetUser(user?.id as number);
+      } else {
+        console.error('Error updating user:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <>
+      <Header handleTheme={handleTheme} theme={theme} />
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <main className="flex-grow flex items-center justify-center relative ml-4 text-white gap-6">
+        {profileWindow && (
+          <>
+            {editProfile ? (
+              <section className="flex flex-col items-center justify-between gap-8 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                  <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-white/10 backdrop-blur-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
+                </div>   
+
+                <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
+                  <div className="flex flex-col items-center justify-center gap-6 grow">
+                      <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                      <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <button type="submit" className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Save</button>
+                    <button type="button" onClick={() => setEditProfile(false)} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Cancel</button>
+                  </div>
+                </form>
+              </section>
+            ) : (
+              <section className="flex flex-col items-center justify-between gap-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <div className="flex flex-col items-center justify-center w-full gap-4">
+                    <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
+                      <Pencil className="w-4 h-4" />
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center">
+                      <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                    </div>
+                      
+                    <div className="flex flex-col items-center justify-center">
+                      <h3 className="text-xl font-bold">{user?.username}</h3>
+                      <p className="text-lg text-white/80">{user?.points} points</p>
+                    </div>      
+                </div>
+                
+                <div className="flex flex-col items-start justify-start gap-2 grow w-full">
+                    <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
+                    <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
+                </div>
+
+                <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
+              </section>
+            )}
+          </>
+        )}
+
+        <section className="flex flex-col items-center justify-center gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+          {authenticated ? (
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer hover:underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
+            </div>
+          ) : (
+            <button className="flex gap-2 items-center justify-center self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(true)}>
+              <LogIn className="w-4 h-4" />
+              Login
+            </button>
+          )}
+
+          <div className="flex items-center justify-center text-[5rem] font-bold cursor-default">
+            <span>{minutes.toString().padStart(2, '0')}</span>:<span>{seconds.toString().padStart(2, '0')}</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-4">
+            {isRunning ? (
+              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Pause /></button>
+            ) : (
+              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Play /></button>
+            )}
+            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleReset}><RotateCcw /></button>
+          </div>
+
+          <EmbeddedVideo />
+
+          <p className="text-xs text-white">Focus for 25 minutes, then take a short break!</p>
+        </section>
+
+        {loginWindow && (
+          <section className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+            <div className="flex flex-col items-center justify-center text-center">
+              <h2 className="text-2xl font-bold">Login</h2>
+              <p className="text-xs text-white">Login to your account to start tracking your focus time and earn points!</p>
+            </div>
+
+            <form className="flex flex-col items-center justify-center gap-8 grow" onSubmit={handleLogin}>
+              <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
+                <LogIn className="w-4 h-4" /> Login
+              </button>
+            </form>
+
+            {errorMessage && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Invalid email or password</p>}
+            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignup}>Don't have an account? Sign up</p>
+
+            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(false)}><X /></button>
+          </section>
+        )}
+
+        {signupWindow && (
+          <section className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+            <h2 className="text-2xl font-bold">Sign Up</h2>
+
+            <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
+              <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+              <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
+                <LogIn className="w-4 h-4" /> Sign Up
+              </button>
+            </form>
+
+            {noMatch && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Passwords do not match</p>}
+            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToLogin}>Already have an account? Login</p>
+
+            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
+          </section>
+        )}
+      </main>
+
+      <Footer />
+      <BackgroundVideo theme={theme} />
+    </>
+  );
+}
+
+function Header({ handleTheme, theme }: { handleTheme: () => void, theme: string }) {
+  return (
+    <header className="flex justify-center items-center text-white p-2">
+      <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.05, ease: "easeInOut" }}
+          className="flex items-center justify-center"
+        >
+          <>
+            {theme === "light" ? (
+              <div className="flex items-center justify-center hover:text-yellow-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+                <h1 className="text-2xl font-bold">Project Lotus</h1>
+                  <Sun className="w-min h-min" />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+                <h1 className="text-2xl font-bold">Project Lotus</h1>
+                  <Moon className="w-min h-min" />
+              </div>
+            )}
+          </>
+        </motion.div>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="flex justify-center items-center px-4 py-2">
+      <p className="text-sm text-white">© 2024 Project Lotus</p>
+    </footer>
+  );
+}
+
+function BackgroundVideo({ theme }: { theme: string }) {
+  return (
+    <div className="fixed inset-0 w-full h-full overflow-hidden z-[-1]">  
+      <AnimatePresence mode="wait">
+        <motion.video 
+          key={theme}
+          src={`/background/anim-bg${theme}.mp4`} 
+          autoPlay 
+          muted 
+          loop
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.05, ease: "easeInOut" }}
         />
-      </div>
+      </AnimatePresence>
+    </div>
+  );
+}
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+function EmbeddedVideo() {
+  return (
+    <div>  
+      <iframe 
+        width="100%" 
+        height="100%" 
+        src="https://www.youtube.com/embed/jfKfPfyJRdk?si=V1yUG-F9Ra1iD2AC&autoplay=1&mute=1" 
+        title="lofi hip hop radio - beats to relax/study to" 
+        frameBorder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share, muted, playsinline" 
+        referrerPolicy="strict-origin-when-cross-origin" 
+        allowFullScreen
+        className="rounded-lg"
+      >
+      </iframe>
+    </div>
   );
 }
