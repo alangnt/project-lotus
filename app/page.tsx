@@ -68,6 +68,33 @@ export default function Home() {
   useEffect(() => {
     bell.current = new Audio('/sounds/bell.wav');
   }, []);
+
+  const handlePoints = async () => {
+    if (authenticated) {
+      try {
+        const response = await fetch(`/api/points?id=${session?.user?.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            points: 100,
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(prevUser => prevUser ? {...prevUser, points: data.points} : null);
+        } else {
+          console.error('Error fetching points:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching points:', error);
+      }
+    } else {
+      setLoginWindow(true);
+    }
+  }
   
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -86,7 +113,7 @@ export default function Home() {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning, minutes, seconds]);
+  }, [isRunning, minutes, seconds, handlePoints]);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -117,33 +144,6 @@ export default function Home() {
     setSeconds(0);
     setIsRunning(false);
   };
-
-  const handlePoints = async () => {
-    if (authenticated) {
-      try {
-        const response = await fetch(`/api/points?id=${session?.user?.id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            points: 100,
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(prevUser => prevUser ? {...prevUser, points: data.points} : null);
-        } else {
-          console.error('Error fetching points:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching points:', error);
-      }
-    } else {
-      setLoginWindow(true);
-    }
-  }
 
   const handleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -380,7 +380,7 @@ export default function Home() {
             </form>
 
             {errorMessage && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Invalid email or password</p>}
-            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignup}>Don't have an account? Sign up</p>
+            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignup}>Don&apos;t have an account? Sign up</p>
 
             <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(false)}><X /></button>
           </section>
