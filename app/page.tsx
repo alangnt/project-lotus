@@ -284,7 +284,7 @@ export default function Home() {
     <>
       <Header handleTheme={handleTheme} theme={theme} />
 
-      <main className="flex-grow flex items-center justify-center relative ml-4 text-white gap-6">
+      <main className="flex-grow max-sm:flex-col flex items-center justify-center relative text-white max-md:gap-4 gap-6 max-sm:my-12">
         {profileWindow && (
           <>
             {editProfile ? (
