@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -69,7 +69,7 @@ export default function Home() {
     bell.current = new Audio('/sounds/bell.wav');
   }, []);
 
-  const handlePoints = async () => {
+  const handlePoints = useCallback(async () => {
     if (authenticated) {
       try {
         const response = await fetch(`/api/points?id=${session?.user?.id}`, {
@@ -94,7 +94,7 @@ export default function Home() {
     } else {
       setLoginWindow(true);
     }
-  }
+  }, [authenticated, session?.user?.id]);
   
   useEffect(() => {
     let interval: NodeJS.Timeout;
