@@ -5,7 +5,7 @@ import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 import { Sun, Moon, Play, RotateCcw, Pause, LogIn, X, Pencil } from "lucide-react";
 
