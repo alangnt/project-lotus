@@ -5,19 +5,23 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: '**.public.blob.vercel-storage.com'
+            },
+            {
+                protocol: 'http',
+                hostname: 'localhost'
+            },
+            {
+                protocol: 'http',
+                hostname: '127.0.0.1'
+            },
+            {
+                protocol: 'https',
+                hostname: 'project-lotus-8pfq.vercel.app'
+            },
+            {
+                protocol: 'https',
+                hostname: 'www.project-lotus-8pfq.vercel.app'
             }
-        ],
-        domains: [
-            "localhost",
-            "127.0.0.1",
-            "projectlotus.com",
-            "projectlotus.com.br",
-            "www.projectlotus.com",
-            "www.projectlotus.com.br",
-            "projectlotus.vercel.app",
-            "www.projectlotus.vercel.app",
-            "project-lotus-8pfq.vercel.app",
-            "www.project-lotus-8pfq.vercel.app"
         ]
     },
     async headers() {
