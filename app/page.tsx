@@ -23,7 +23,13 @@ export default function Home() {
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(25);
   const [isRunning, setIsRunning] = useState(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() => {
+    // Load theme from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'light';
+    }
+    return 'light';
+  });
   const bell = useRef<HTMLAudioElement | null>(null);
 
   const { data: session, status } = useSession();
@@ -128,7 +134,7 @@ export default function Home() {
         avatar_url: session?.user?.avatar_url as string,
       });
 
-      handleGetUser(session?.user?.id as number);
+      // Removed redundant handleGetUser call - user data already in session
     } else {
       setAuthenticated(false);
       setUser(null);
@@ -146,7 +152,10 @@ export default function Home() {
   };
 
   const handleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    // Persist theme to localStorage
+    localStorage.setItem('theme', newTheme);
   };
 
   const handleSwitchToSignup = () => {
@@ -445,7 +454,7 @@ function Header({ handleTheme, theme }: { handleTheme: () => void, theme: string
 function Footer() {
   return (
     <footer className="flex justify-center items-center px-4 py-2">
-      <p className="text-sm text-white">© 2024 Project Lotus</p>
+      <p className="text-sm text-white">© 2026 Project Lotus</p>
     </footer>
   );
 }

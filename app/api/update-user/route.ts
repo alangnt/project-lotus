@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
 import { put } from '@vercel/blob';
 import path from 'path';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/options';
+import { requireAuth } from '@/lib/auth';
+import { getPool } from '@/lib/db';
+import { updateUserSchema } from '@/lib/validations';
+import { errorResponse, successResponse, handleValidationError } from '@/lib/utils';
 
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-});
+const pool = getPool();
 
 export async function POST(request: NextRequest) {
     try {
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // Require authentication
+        const user = await requireAuth();
 
         const formData = await request.formData();
         const file = formData.get('avatar_url') as File | null;
@@ -22,8 +19,34 @@ export async function POST(request: NextRequest) {
         const first_name = formData.get('first_name') as string | null;
         const last_name = formData.get('last_name') as string | null;
 
-        if (!username) {
-            return NextResponse.json({ error: 'Username is required' }, { status: 400 });
+        // Validate input
+        const validationResult = updateUserSchema.safeParse({
+            username,
+            first_name: first_name || undefined,
+            last_name: last_name || undefined,
+        });
+
+        if (!validationResult.success) {
+            return handleValidationError(validationResult.error);
+        }
+
+        // Check authorization - users can only update their own profile
+        if (user.username !== username) {
+            return errorResponse('Forbidden: You can only update your own profile', 403);
+        }
+
+        // Validate file if provided
+        if (file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (!allowedTypes.includes(file.type)) {
+                return errorResponse('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.', 400);
+            }
+
+            if (file.size > maxSize) {
+                return errorResponse('File size exceeds 5MB limit', 400);
+            }
         }
 
         let avatarUrl = null;
@@ -56,26 +79,31 @@ export async function POST(request: NextRequest) {
             paramCount++;
         }
 
+        // No fields to update
+        if (values.length === 0) {
+            return successResponse({ message: 'No fields to update' });
+        }
+
         // Remove trailing comma and add WHERE clause
         query = query.slice(0, -1) + ` WHERE username = $${paramCount} RETURNING avatar_url, first_name, last_name`;
         values.push(username);
 
-        // Only proceed with the update if there are fields to update
-        if (values.length > 1) {
-            const result = await pool.query(query, values);
-            console.log(`Database updated for user: ${username}`);
-            return NextResponse.json(result.rows[0]);
-        } else {
-            return NextResponse.json({ message: 'No fields to update' });
+        const result = await pool.query(query, values);
+        
+        if (result.rows.length === 0) {
+            return errorResponse('User not found', 404);
         }
+
+        return successResponse(result.rows[0]);
     } catch (error) {
-        console.error('Error updating user:', error);
-        if (error instanceof Error) {
-            return NextResponse.json({ 
-                error: `Failed to update user: ${error.message}`,
-                stack: error.stack 
-            }, { status: 500 });
+        if (error instanceof Error && error.message === 'Unauthorized') {
+            return errorResponse('Unauthorized', 401);
         }
-        return NextResponse.json({ error: 'Failed to update user: Unknown error' }, { status: 500 });
+        console.error('Error updating user:', error);
+        
+        if (error instanceof Error) {
+            return errorResponse(`Failed to update user: ${error.message}`, 500);
+        }
+        return errorResponse('Failed to update user: Unknown error', 500);
     }
 }
