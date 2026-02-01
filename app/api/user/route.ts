@@ -4,10 +4,10 @@ import { getPool } from '@/lib/db';
 import { userIdSchema } from '@/lib/validations';
 import { errorResponse, successResponse, handleValidationError } from '@/lib/utils';
 
-const pool = getPool();
-
 export async function GET(request: NextRequest) {
     try {
+        const pool = getPool();
+        
         // Require authentication
         await requireAuth();
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
         // Explicitly exclude password from query
         const userQuery = `
-            SELECT id, username, email, points, first_name, last_name, avatar_url, created_at
+            SELECT id, username, email, points, first_name, last_name, avatar_url
             FROM users_lotus 
             WHERE id = $1
         `;

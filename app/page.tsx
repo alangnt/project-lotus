@@ -9,15 +9,8 @@ import { motion, AnimatePresence } from "motion/react";
 
 import { Sun, Moon, Play, RotateCcw, Pause, LogIn, X, Pencil } from "lucide-react";
 
-interface User {
-  id: number;
-  email: string;
-  username: string;
-  points: string;
-  first_name: string;
-  last_name: string;
-  avatar_url: string;
-}
+// Import TanStack Query hooks
+import { useUser, useUpdateUser, useAddPoints, User } from "./hooks/useUser";
 
 export default function Home() {
   const [seconds, setSeconds] = useState(0);
@@ -33,11 +26,21 @@ export default function Home() {
   const bell = useRef<HTMLAudioElement | null>(null);
 
   const { data: session, status } = useSession();
-  const [user, setUser] = useState<User | null>(null);
+  const authenticated = status === "authenticated" && !!session?.user;
+  
+  // TanStack Query hooks - replaces manual fetch + useState pattern
+  const { 
+    data: user, 
+    isLoading: userLoading,
+    error: userError 
+  } = useUser(authenticated ? session?.user?.id as number : undefined);
+  
+  const updateUserMutation = useUpdateUser();
+  const addPointsMutation = useAddPoints();
+
   const [loginWindow, setLoginWindow] = useState(false);
   const [signupWindow, setSignupWindow] = useState(false);
   const [profileWindow, setProfileWindow] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
@@ -60,47 +63,21 @@ export default function Home() {
     avatar_url: "",
   });
 
-  const handleGetUser = async (id: number) => {
-
-    try {
-      const response = await fetch(`/api/user?id=${id}`);
-      const data = await response.json();
-      setUser(data);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  }
-
   useEffect(() => {
     bell.current = new Audio('/sounds/bell.wav');
   }, []);
 
+  // Simplified handlePoints using TanStack Query mutation
   const handlePoints = useCallback(async () => {
-    if (authenticated) {
-      try {
-        const response = await fetch(`/api/points?id=${session?.user?.id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            points: 100,
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(prevUser => prevUser ? {...prevUser, points: data.points} : null);
-        } else {
-          console.error('Error fetching points:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching points:', error);
-      }
+    if (authenticated && session?.user?.id) {
+      addPointsMutation.mutate({ 
+        userId: session.user.id as number, 
+        points: 100 
+      });
     } else {
       setLoginWindow(true);
     }
-  }, [authenticated, session?.user?.id]);
+  }, [authenticated, session?.user?.id, addPointsMutation]);
   
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -120,26 +97,6 @@ export default function Home() {
     }
     return () => clearInterval(interval);
   }, [isRunning, minutes, seconds, handlePoints]);
-
-  useEffect(() => {
-    if (status === "authenticated" && session?.user) {
-      setAuthenticated(true);
-      setUser({
-        id: session?.user?.id as number,
-        email: session?.user?.email as string,
-        username: session?.user?.username as string,
-        points: session?.user?.points as string,
-        first_name: session?.user?.first_name as string,
-        last_name: session?.user?.last_name as string,
-        avatar_url: session?.user?.avatar_url as string,
-      });
-
-      // Removed redundant handleGetUser call - user data already in session
-    } else {
-      setAuthenticated(false);
-      setUser(null);
-    }
-  }, [status, session]);
 
   const handleCountdown = () => {
     setIsRunning(!isRunning);
@@ -198,7 +155,6 @@ export default function Home() {
     });
 
     if (result?.ok) {
-        setAuthenticated(true);
         setLoginWindow(false);
     } else {
       setErrorMessage(true);
@@ -240,7 +196,6 @@ export default function Home() {
               });
           
               if (result?.ok) {
-                  setAuthenticated(true);
                   setSignupWindow(false);
               }
 
@@ -257,6 +212,7 @@ export default function Home() {
       }
   };
 
+  // Simplified handleUpdateUser using TanStack Query mutation
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -270,23 +226,14 @@ export default function Home() {
       formData.append('avatar_url', fileInput.files[0]);
     }
 
-    try {
-      const response = await fetch('/api/update-user', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(prevUser => prevUser ? {...prevUser, ...data} : null);
+    updateUserMutation.mutate(formData, {
+      onSuccess: () => {
         setEditProfile(false);
-        handleGetUser(user?.id as number);
-      } else {
-        console.error('Error updating user:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error updating user:', error);
-    }
+      },
+      onError: (error) => {
+        console.error('Error updating user:', error);
+      },
+    });
   };
 
   return (
@@ -317,7 +264,9 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
-                      <button type="submit" className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Save</button>
+                      <button type="submit" disabled={updateUserMutation.isPending} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200 disabled:opacity-50">
+                        {updateUserMutation.isPending ? 'Saving...' : 'Save'}
+                      </button>
                       <button type="button" onClick={() => setEditProfile(false)} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Cancel</button>
                     </div>
                   </form>

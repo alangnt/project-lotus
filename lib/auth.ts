@@ -29,7 +29,8 @@ export async function isAuthorized(userId: number): Promise<boolean> {
   }
   
   // User can only access their own resources
-  return session.user.id === userId;
+  // Use Number() to ensure consistent type comparison (JWT may store id as string)
+  return Number(session.user.id) === Number(userId);
 }
 
 /**
