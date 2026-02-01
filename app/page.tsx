@@ -294,56 +294,69 @@ export default function Home() {
       <Header handleTheme={handleTheme} theme={theme} />
 
       <main className="grow max-sm:flex-col flex items-center justify-center relative text-white max-md:gap-4 gap-6 max-sm:my-12">
-        {profileWindow && (
-          <>
-            {editProfile ? (
-              <section className="flex flex-col items-center justify-between gap-8 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
-                  <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-white/10 backdrop-blur-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
-                </div>   
+        <AnimatePresence mode="wait">
+          {profileWindow && (
+            <motion.div
+              key={editProfile ? "edit-profile" : "view-profile"}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {editProfile ? (
+                <section className="flex flex-col items-center justify-between gap-8 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                    <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-white/10 backdrop-blur-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
+                  </div>   
 
-                <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
-                  <div className="flex flex-col items-center justify-center gap-6 grow">
-                      <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
-                      <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
-                  </div>
-
-                  <div className="flex items-center justify-center gap-2">
-                    <button type="submit" className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Save</button>
-                    <button type="button" onClick={() => setEditProfile(false)} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Cancel</button>
-                  </div>
-                </form>
-              </section>
-            ) : (
-              <section className="flex flex-col items-center justify-between gap-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
-                <div className="flex flex-col items-center justify-center w-full gap-4">
-                    <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
-                      <Pencil className="w-4 h-4" />
+                  <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
+                    <div className="flex flex-col items-center justify-center gap-6 grow">
+                        <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                        <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
                     </div>
 
-                    <div className="flex flex-col items-center justify-center">
-                      <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                    <div className="flex items-center justify-center gap-2">
+                      <button type="submit" className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Save</button>
+                      <button type="button" onClick={() => setEditProfile(false)} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Cancel</button>
                     </div>
-                      
-                    <div className="flex flex-col items-center justify-center">
-                      <h3 className="text-xl font-bold">{user?.username}</h3>
-                      <p className="text-lg text-white/80">{user?.points} points</p>
-                    </div>      
-                </div>
-                
-                <div className="flex flex-col items-start justify-start gap-2 grow w-full">
-                    <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
-                    <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
-                </div>
+                  </form>
+                </section>
+              ) : (
+                <section className="flex flex-col items-center justify-between gap-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                  <div className="flex flex-col items-center justify-center w-full gap-4">
+                      <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
+                        <Pencil className="w-4 h-4" />
+                      </div>
 
-                <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
-              </section>
-            )}
-          </>
-        )}
+                      <div className="flex flex-col items-center justify-center">
+                        <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                      </div>
+                        
+                      <div className="flex flex-col items-center justify-center">
+                        <h3 className="text-xl font-bold">{user?.username}</h3>
+                        <p className="text-lg text-white/80">{user?.points} points</p>
+                      </div>      
+                  </div>
+                  
+                  <div className="flex flex-col items-start justify-start gap-2 grow w-full">
+                      <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
+                      <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
+                  </div>
 
-        <section className="flex flex-col items-center justify-center gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                  <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
+                </section>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.section 
+          className="flex flex-col items-center justify-center gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
           {authenticated ? (
             <div className="flex items-center justify-center gap-2">
               <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer hover:underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
@@ -371,50 +384,66 @@ export default function Home() {
           <EmbeddedVideo />
 
           <p className="text-xs text-white">Focus for 25 minutes, then take a short break!</p>
-        </section>
+        </motion.section>
 
-        {loginWindow && (
-          <section className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
-            <div className="flex flex-col items-center justify-center text-center">
-              <h2 className="text-2xl font-bold">Login</h2>
-              <p className="text-xs text-white">Login to your account to start tracking your focus time and earn points!</p>
-            </div>
+        <AnimatePresence>
+          {loginWindow && (
+            <motion.section 
+              className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <div className="flex flex-col items-center justify-center text-center">
+                <h2 className="text-2xl font-bold">Login</h2>
+                <p className="text-xs text-white">Login to your account to start tracking your focus time and earn points!</p>
+              </div>
 
-            <form className="flex flex-col items-center justify-center gap-8 grow" onSubmit={handleLogin}>
-              <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
-                <LogIn className="w-4 h-4" /> Login
-              </button>
-            </form>
+              <form className="flex flex-col items-center justify-center gap-8 grow" onSubmit={handleLogin}>
+                <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
+                  <LogIn className="w-4 h-4" /> Login
+                </button>
+              </form>
 
-            {errorMessage && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Invalid email or password</p>}
-            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignup}>Don&apos;t have an account? Sign up</p>
+              {errorMessage && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Invalid email or password</p>}
+              <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignup}>Don&apos;t have an account? Sign up</p>
 
-            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(false)}><X /></button>
-          </section>
-        )}
+              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(false)}><X /></button>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
-        {signupWindow && (
-          <section className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
-            <h2 className="text-2xl font-bold">Sign Up</h2>
+        <AnimatePresence>
+          {signupWindow && (
+            <motion.section 
+              className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <h2 className="text-2xl font-bold">Sign Up</h2>
 
-            <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
-              <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-              <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
-                <LogIn className="w-4 h-4" /> Sign Up
-              </button>
-            </form>
+              <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
+                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
+                  <LogIn className="w-4 h-4" /> Sign Up
+                </button>
+              </form>
 
-            {noMatch && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Passwords do not match</p>}
-            <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToLogin}>Already have an account? Login</p>
+              {noMatch && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Passwords do not match</p>}
+              <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToLogin}>Already have an account? Login</p>
 
-            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
-          </section>
-        )}
+              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
+            </motion.section>
+          )}
+        </AnimatePresence>
       </main>
 
       <Footer />
@@ -453,9 +482,14 @@ function Header({ handleTheme, theme }: { handleTheme: () => void, theme: string
 
 function Footer() {
   return (
-    <footer className="flex justify-center items-center px-4 py-2">
+    <motion.footer 
+      className="flex justify-center items-center px-4 py-2"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
+    >
       <p className="text-sm text-white">© 2026 Project Lotus</p>
-    </footer>
+    </motion.footer>
   );
 }
 
