@@ -308,7 +308,7 @@ export default function Home() {
         >
           {authenticated ? (
             <div className="flex items-center justify-center gap-2">
-              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer hover:underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
+              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
             </div>
           ) : (
             <button className="flex gap-2 items-center justify-center self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(true)}>
