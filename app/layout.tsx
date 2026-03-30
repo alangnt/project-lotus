@@ -50,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col min-h-screen bg-black`}>
+      <body className={`${inter.className}`}>
         <Providers>{children}</Providers>
       </body>
     </html>

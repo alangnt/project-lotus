@@ -16,13 +16,7 @@ export default function Home() {
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(25);
   const [isRunning, setIsRunning] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    // Load theme from localStorage
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'light';
-    }
-    return 'light';
-  });
+  const [theme, setTheme] = useState('light');
   const bell = useRef<HTMLAudioElement | null>(null);
 
   const { data: session, status } = useSession();
@@ -66,6 +60,16 @@ export default function Home() {
   useEffect(() => {
     bell.current = new Audio('/sounds/bell.wav');
   }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') || 'light';
+    setTheme(saved);
+    document.documentElement.classList.toggle('dark', saved === 'dark');
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
   // Simplified handlePoints using TanStack Query mutation
   const handlePoints = useCallback(async () => {
@@ -236,11 +240,34 @@ export default function Home() {
     });
   };
 
-  return (
-    <>
-      <Header handleTheme={handleTheme} theme={theme} />
+  useEffect(() => {                                                                                                                                            
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
-      <main className="grow max-sm:flex-col flex items-center justify-center relative text-white max-md:gap-4 gap-6 max-sm:my-12">
+  useEffect(() => {
+    const saved = localStorage.getItem('theme') || 'light';                                                                                                    
+    setTheme(saved);                                                                                                                                           
+    document.documentElement.classList.toggle('dark', saved === 'dark');
+  }, []);   
+
+  return (
+    <div className={`flex flex-col min-h-screen dark:bg-black`}>
+       <header className="flex justify-center items-center text-white p-2">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.05, ease: "easeInOut" }}
+            className="flex items-center justify-center"
+          >
+            <div className="flex items-center justify-center hover:text-yellow-500 dark:hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+              <h1 className="text-2xl font-bold">Project Lotus</h1>
+              {theme === "light" ? <Sun className="w-min h-min" /> : <Moon className="w-min h-min" />}
+            </div>
+          </motion.div>
+      </header>
+
+      <main className="grow max-sm:flex-col flex items-center justify-center relative max-md:gap-4 gap-6 max-sm:my-12">
         <AnimatePresence mode="wait">
           {profileWindow && (
             <motion.div
@@ -301,7 +328,7 @@ export default function Home() {
         </AnimatePresence>
 
         <motion.section 
-          className="flex flex-col items-center justify-center gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+          className="flex flex-col items-center justify-center gap-4 bg-background/10 dark:bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -395,70 +422,14 @@ export default function Home() {
         </AnimatePresence>
       </main>
 
-      <Footer />
-      <BackgroundVideo theme={theme} />
-    </>
-  );
-}
-
-function Header({ handleTheme, theme }: { handleTheme: () => void, theme: string }) {
-  return (
-    <header className="flex justify-center items-center text-white p-2">
-      <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.05, ease: "easeInOut" }}
-          className="flex items-center justify-center"
-        >
-          <>
-            {theme === "light" ? (
-              <div className="flex items-center justify-center hover:text-yellow-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
-                <h1 className="text-2xl font-bold">Project Lotus</h1>
-                  <Sun className="w-min h-min" />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
-                <h1 className="text-2xl font-bold">Project Lotus</h1>
-                  <Moon className="w-min h-min" />
-              </div>
-            )}
-          </>
-        </motion.div>
-    </header>
-  );
-}
-
-function Footer() {
-  return (
-    <motion.footer 
-      className="flex justify-center items-center px-4 py-2"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
-    >
-      <p className="text-sm text-white">© 2026 Project Lotus</p>
-    </motion.footer>
-  );
-}
-
-function BackgroundVideo({ theme }: { theme: string }) {
-  return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden z-[-1]">  
-      <AnimatePresence mode="wait">
-        <motion.video 
-          key={theme}
-          src={`/background/anim-bg${theme}.mp4`} 
-          autoPlay 
-          muted 
-          loop
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.05, ease: "easeInOut" }}
-        />
-      </AnimatePresence>
+      <motion.footer 
+        className="flex justify-center items-center px-4 py-2"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
+      >
+        <p className="text-sm text-white">© 2026 Project Lotus</p>
+      </motion.footer>
     </div>
   );
 }
@@ -471,7 +442,6 @@ function EmbeddedVideo() {
         height="100%" 
         src="https://www.youtube.com/embed/jfKfPfyJRdk?si=V1yUG-F9Ra1iD2AC&autoplay=1&mute=1" 
         title="lofi hip hop radio - beats to relax/study to" 
-        frameBorder="0" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share, muted, playsinline" 
         referrerPolicy="strict-origin-when-cross-origin" 
         allowFullScreen
