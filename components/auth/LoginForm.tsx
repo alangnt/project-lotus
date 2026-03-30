@@ -3,8 +3,8 @@ import { motion } from "motion/react";
 import { LogIn, X } from "lucide-react";
 import { SubmitEvent, useState } from "react";
 
-export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSwitchToSignUpWindow }
-  : { setIsLoginWindowDisplayed: (value: boolean) => void; handleSwitchToSignUpWindow: () => void }) {
+export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSwitchAuthWindow }
+  : { setIsLoginWindowDisplayed: (value: boolean) => void; handleSwitchAuthWindow: (value: "login" | "signup") => void }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [formDataLogin, setFormDataLogin] = useState({
@@ -58,7 +58,7 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
       </form>
 
       {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>Invalid email or password</p>}
-      <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToSignUpWindow}>Don&apos;t have an account? Sign up</p>
+      <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={() => handleSwitchAuthWindow("signup")}>Don&apos;t have an account? Sign up</p>
 
       <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setIsLoginWindowDisplayed(false)}><X /></button>
     </motion.section>

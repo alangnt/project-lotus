@@ -114,15 +114,15 @@ export default function Home() {
     localStorage.setItem('theme', newTheme);
   };
 
-  const handleSwitchToSignup = () => {
-    setLoginWindow(false);
-    setSignupWindow(true);
-  };
-
   const handleSwitchToLogin = () => {
     setLoginWindow(true);
     setSignupWindow(false);
   };
+
+  const handleSwitchAuthWindow = (target: "login" | "signup") => {
+    setLoginWindow(target === "login" ? true : false);
+    setSignupWindow(target === "login" ? false: true);
+  }
 
   const handleFormChangeSignUp = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormDataSignup({ ...formDataSignup, [e.target.name]: e.target.value });
@@ -325,7 +325,7 @@ export default function Home() {
 
         <AnimatePresence>
           {loginWindow && (
-            <LoginFormComponent setIsLoginWindowDisplayed={setLoginWindow} handleSwitchToSignUpWindow={handleSwitchToSignup}></LoginFormComponent>
+            <LoginFormComponent setIsLoginWindowDisplayed={setLoginWindow} handleSwitchAuthWindow={handleSwitchAuthWindow}></LoginFormComponent>
           )}
         </AnimatePresence>
 
