@@ -212,7 +212,7 @@ export default function Home() {
   };
 
   return (
-    <div className={`flex flex-col min-h-screen dark:bg-black`}>
+    <div className={`flex flex-col min-h-screen bg-background`}>
        <header className="flex justify-center items-center text-white p-2">
         <motion.div
             initial={{ opacity: 0 }}
@@ -239,30 +239,30 @@ export default function Home() {
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {editProfile ? (
-                <section className="flex flex-col items-center justify-between gap-8 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <section className="flex flex-col items-center justify-between gap-8 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
-                    <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-white/10 backdrop-blur-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
+                    <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-foreground/10 backdrop-blur-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
                   </div>   
 
                   <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
                     <div className="flex flex-col items-center justify-center gap-6 grow">
-                        <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
-                        <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                        <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                        <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
-                      <button type="submit" disabled={updateUserMutation.isPending} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200 disabled:opacity-50">
+                      <button type="submit" disabled={updateUserMutation.isPending} className="bg-foreground/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 disabled:opacity-50">
                         {updateUserMutation.isPending ? 'Saving...' : 'Save'}
                       </button>
-                      <button type="button" onClick={() => setEditProfile(false)} className="bg-white/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-white/20 hover:scale-105 transition-all duration-200">Cancel</button>
+                      <button type="button" onClick={() => setEditProfile(false)} className="bg-foreground/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">Cancel</button>
                     </div>
                   </form>
                 </section>
               ) : (
-                <section className="flex flex-col items-center justify-between gap-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <section className="flex flex-col items-center justify-between gap-12 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
                   <div className="flex flex-col items-center justify-center w-full gap-4">
-                      <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
+                      <div className="flex items-center justify-end self-end bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
                         <Pencil className="w-4 h-4" />
                       </div>
 
@@ -281,7 +281,7 @@ export default function Home() {
                       <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
                   </div>
 
-                  <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
+                  <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
                 </section>
               )}
             </motion.div>
@@ -289,7 +289,7 @@ export default function Home() {
         </AnimatePresence>
 
         <motion.section 
-          className="flex flex-col items-center justify-center gap-4 bg-background/10 dark:bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -299,7 +299,7 @@ export default function Home() {
               <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
             </div>
           ) : (
-            <button className="flex gap-2 items-center justify-center self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(true)}>
+            <button className="flex gap-2 items-center justify-center self-end bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(true)}>
               <LogIn className="w-4 h-4" />
               Login
             </button>
@@ -311,11 +311,11 @@ export default function Home() {
 
           <div className="flex items-center justify-center gap-4">
             {isRunning ? (
-              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Pause /></button>
+              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Pause /></button>
             ) : (
-              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Play /></button>
+              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Play /></button>
             )}
-            <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={handleReset}><RotateCcw /></button>
+            <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleReset}><RotateCcw /></button>
           </div>
 
           <EmbeddedVideo />
@@ -332,7 +332,7 @@ export default function Home() {
         <AnimatePresence>
           {signupWindow && (
             <motion.section 
-              className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+              className="flex flex-col items-center justify-between gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
@@ -341,11 +341,11 @@ export default function Home() {
               <h2 className="text-2xl font-bold">Sign Up</h2>
 
               <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
-                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
+                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <button type="submit" className="flex items-center justify-center gap-2 bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">
                   <LogIn className="w-4 h-4" /> Sign Up
                 </button>
               </form>
@@ -353,7 +353,7 @@ export default function Home() {
               {noMatch && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Passwords do not match</p>}
               <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToLogin}>Already have an account? Login</p>
 
-              <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
+              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
             </motion.section>
           )}
         </AnimatePresence>
