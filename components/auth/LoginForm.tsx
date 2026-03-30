@@ -50,15 +50,15 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
       </div>
 
       <form className="flex flex-col items-center justify-center gap-8 grow" onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-        <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-        <button type="submit" className="flex items-center justify-center gap-2 bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">
+        <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="ent_input" required/>
+        <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="ent_input" required/>
+        <button type="submit" className="flex items-center justify-center gap-2 bg-foreground/10 backdrop-blur-lg rounded-md p-2 hover:bg-foreground/20 hover:scale-101 transition-all duration-200">
           <LogIn className="w-4 h-4" /> Login
         </button>
       </form>
 
       {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>Invalid email or password</p>}
-      <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={() => handleSwitchAuthWindow("signup")}>Don&apos;t have an account? Sign up</p>
+      <p className="text-xs hover:underline transition-all duration-200 cursor-pointer" onClick={() => handleSwitchAuthWindow("signup")}>Don&apos;t have an account? Sign up</p>
 
       <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setIsLoginWindowDisplayed(false)}><X /></button>
     </motion.section>

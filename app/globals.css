@@ -16,3 +16,7 @@
     --color-background: var(--background);
     --color-foreground: var(--foreground);
   }
+
+  .ent_input {
+    @apply bg-foreground/10 backdrop-blur-lg rounded-md p-3 hover:bg-foreground/20 hover:scale-101 transition-all duration-100 placeholder:text-foreground/60 placeholder:text-xs;
+  }

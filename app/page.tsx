@@ -40,10 +40,6 @@ export default function Home() {
     bell.current = new Audio('/sounds/bell.wav');
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
-
   // Simplified handlePoints using TanStack Query mutation
   const handlePoints = useCallback(async () => {
     if (authenticated && session?.user?.id) {
@@ -85,17 +81,21 @@ export default function Home() {
     setIsRunning(false);
   };
 
+  const handleSwitchAuthWindow = (target: "login" | "signup") => {
+    setLoginWindow(!!(target === "login"));
+    setSignupWindow(!!(target !== "login"));
+  }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
   const handleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     // Persist theme to localStorage
     localStorage.setItem('theme', newTheme);
   };
-
-  const handleSwitchAuthWindow = (target: "login" | "signup") => {
-    setLoginWindow(!!(target === "login"));
-    setSignupWindow(!!(target !== "login"));
-  }
 
   return (
     <div className={`flex flex-col min-h-screen bg-background`}>
