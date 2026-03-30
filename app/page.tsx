@@ -240,16 +240,6 @@ export default function Home() {
     });
   };
 
-  useEffect(() => {                                                                                                                                            
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme') || 'light';                                                                                                    
-    setTheme(saved);                                                                                                                                           
-    document.documentElement.classList.toggle('dark', saved === 'dark');
-  }, []);   
-
   return (
     <div className={`flex flex-col min-h-screen dark:bg-black`}>
        <header className="flex justify-center items-center text-white p-2">
