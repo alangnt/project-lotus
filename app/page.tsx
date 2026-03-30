@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 import { motion, AnimatePresence } from "motion/react";
@@ -12,6 +12,7 @@ import { Sun, Moon, Play, RotateCcw, Pause, LogIn, X, Pencil } from "lucide-reac
 // Import TanStack Query hooks
 import { useUser, useUpdateUser, useAddPoints, User } from "./hooks/useUser";
 import LoginFormComponent from "@/components/auth/LoginForm";
+import SignUpFormComponent from "@/components/auth/SignUpForm";
 
 export default function Home() {
   const [seconds, setSeconds] = useState(0);
@@ -36,15 +37,7 @@ export default function Home() {
   const [loginWindow, setLoginWindow] = useState(false);
   const [signupWindow, setSignupWindow] = useState(false);
   const [profileWindow, setProfileWindow] = useState(false);
-  const [noMatch, setNoMatch] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-
-  const [formDataSignup, setFormDataSignup] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
 
   const [formDataUpdateUser, setFormDataUpdateUser] = useState({
     first_name: "",
@@ -114,78 +107,14 @@ export default function Home() {
     localStorage.setItem('theme', newTheme);
   };
 
-  const handleSwitchToLogin = () => {
-    setLoginWindow(true);
-    setSignupWindow(false);
-  };
-
   const handleSwitchAuthWindow = (target: "login" | "signup") => {
     setLoginWindow(target === "login" ? true : false);
     setSignupWindow(target === "login" ? false: true);
   }
 
-  const handleFormChangeSignUp = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormDataSignup({ ...formDataSignup, [e.target.name]: e.target.value });
-  }
-
   const handleFormChangeUpdateUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormDataUpdateUser({ ...formDataUpdateUser, [e.target.name]: e.target.value });
   }
-
-  const handlePasswordNoMatch = () => {
-    setNoMatch(true);
-    
-    setTimeout(() => {
-        setNoMatch(false);
-    }, 3000);
-  }
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-      if (formDataSignup.password !== formDataSignup.confirmPassword) {
-          handlePasswordNoMatch();
-          return;
-      }
-    
-      try {
-          const response = await fetch('/api/auth/register', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                username: formDataSignup.username,
-                email: formDataSignup.email,
-                password: formDataSignup.password,
-                confirmPassword: formDataSignup.confirmPassword,
-              })
-          });
-  
-          if (response.ok) {
-              const result = await signIn('credentials', {
-                username: formDataSignup.username,
-                email: formDataSignup.email,
-                password: formDataSignup.password,
-                redirect: false,
-              });
-          
-              if (result?.ok) {
-                  setSignupWindow(false);
-              }
-
-              const data = await response.json();
-
-              const { email, username } = data;
-              setFormDataSignup({ ...formDataSignup, email, username });
-          } else {
-              const errorData = await response.json();
-              console.error('Error signing up:', errorData.message);
-          }
-        } catch (error) {
-        console.error('Error signing up:', error);
-      }
-  };
 
   // Simplified handleUpdateUser using TanStack Query mutation
   const handleUpdateUser = async (e: React.FormEvent) => {
@@ -239,7 +168,7 @@ export default function Home() {
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {editProfile ? (
-                <section className="flex flex-col items-center justify-between gap-8 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <section className="flex flex-col items-center justify-between gap-8 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
                     <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-foreground/10 backdrop-blur-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
@@ -260,7 +189,7 @@ export default function Home() {
                   </form>
                 </section>
               ) : (
-                <section className="flex flex-col items-center justify-between gap-12 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
+                <section className="flex flex-col items-center justify-between gap-12 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5">
                   <div className="flex flex-col items-center justify-center w-full gap-4">
                       <div className="flex items-center justify-end self-end bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
                         <Pencil className="w-4 h-4" />
@@ -289,7 +218,7 @@ export default function Home() {
         </AnimatePresence>
 
         <motion.section 
-          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
+          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -331,30 +260,7 @@ export default function Home() {
 
         <AnimatePresence>
           {signupWindow && (
-            <motion.section 
-              className="flex flex-col items-center justify-between gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              <h2 className="text-2xl font-bold">Sign Up</h2>
-
-              <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
-                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <button type="submit" className="flex items-center justify-center gap-2 bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">
-                  <LogIn className="w-4 h-4" /> Sign Up
-                </button>
-              </form>
-
-              {noMatch && <p className={`text-xs ${theme === "light" ? "text-red-800" : "text-red-500"} font-bold`}>Passwords do not match</p>}
-              <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={handleSwitchToLogin}>Already have an account? Login</p>
-
-              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setSignupWindow(false)}><X /></button>
-            </motion.section>
+            <SignUpFormComponent setIsSignUpWindowDisplayed={setSignupWindow} handleSwitchAuthWindow={handleSwitchAuthWindow}></SignUpFormComponent>
           )}
         </AnimatePresence>
       </main>

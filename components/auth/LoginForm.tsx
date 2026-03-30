@@ -1,7 +1,7 @@
 import { signIn } from "next-auth/react";
 import { motion } from "motion/react";
 import { LogIn, X } from "lucide-react";
-import { SubmitEvent, useState } from "react";
+import { ChangeEvent, SubmitEvent, useState } from "react";
 
 export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSwitchAuthWindow }
   : { setIsLoginWindowDisplayed: (value: boolean) => void; handleSwitchAuthWindow: (value: "login" | "signup") => void }) {
@@ -12,7 +12,7 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
     password: "",
   });
 
-  const handleFormChangeLogin = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormChangeLogin = (e: ChangeEvent<HTMLInputElement>) => {
     setFormDataLogin({ ...formDataLogin, [e.target.name]: e.target.value });
   }
 
