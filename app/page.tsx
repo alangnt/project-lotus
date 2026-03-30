@@ -99,19 +99,19 @@ export default function Home() {
 
   return (
     <div className={`flex flex-col min-h-screen bg-background`}>
-       <header className="flex justify-center items-center text-white p-2">
+      <header className="flex justify-center items-center text-white p-2">
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.05, ease: "easeInOut" }}
-            className="flex items-center justify-center"
-          >
-            <div className="flex items-center justify-center text-foreground hover:text-yellow-500 dark:hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
-              <h1 className="text-2xl font-bold">Project Lotus</h1>
-              {theme === "light" ? <Sun className="w-min h-min" /> : <Moon className="w-min h-min" />}
-            </div>
-          </motion.div>
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.05, ease: "easeInOut" }}
+          className="flex items-center justify-center"
+        >
+          <div className="flex items-center justify-center text-foreground hover:text-yellow-500 dark:hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+            <h1 className="text-2xl font-bold">Project Lotus</h1>
+            {theme === "light" ? <Sun className="w-min h-min" /> : <Moon className="w-min h-min" />}
+          </div>
+        </motion.div>
       </header>
 
       <main className="grow max-sm:flex-col flex items-center justify-center relative max-md:gap-4 gap-6 max-sm:my-12">
