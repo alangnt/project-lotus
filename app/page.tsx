@@ -93,8 +93,8 @@ export default function Home() {
   };
 
   const handleSwitchAuthWindow = (target: "login" | "signup") => {
-    setLoginWindow(target === "login" ? true : false);
-    setSignupWindow(target === "login" ? false: true);
+    setLoginWindow(!!(target === "login"));
+    setSignupWindow(!!(target !== "login"));
   }
 
   return (
