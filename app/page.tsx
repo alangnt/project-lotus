@@ -106,6 +106,7 @@ export default function Home() {
         mask="fade-edges"
         fill={theme === "light" ? "#252525" : "#ffffff"}
         className="bg-background"
+        size={36}
       ></BGPattern>
 
       <header className="flex justify-center items-center text-white p-2">
@@ -131,7 +132,7 @@ export default function Home() {
         </AnimatePresence>
 
         <motion.section 
-          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5"
+          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5 text-foreground"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -141,9 +142,8 @@ export default function Home() {
               <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
             </div>
           ) : (
-            <button className="flex gap-2 items-center justify-center self-end bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setLoginWindow(true)}>
+            <button className="ent-button" onClick={() => setLoginWindow(true)}>
               <LogIn className="w-4 h-4" />
-              Login
             </button>
           )}
 
@@ -153,16 +153,16 @@ export default function Home() {
 
           <div className="flex items-center justify-center gap-4">
             {isRunning ? (
-              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Pause /></button>
+              <button className="ent-button" onClick={handleCountdown}><Pause /></button>
             ) : (
-              <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleCountdown}><Play /></button>
+              <button className="ent-button" onClick={handleCountdown}><Play /></button>
             )}
-            <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={handleReset}><RotateCcw /></button>
+            <button className="ent-button" onClick={handleReset}><RotateCcw /></button>
           </div>
 
           <EmbeddedVideo />
 
-          <p className="text-xs text-white">Focus for 25 minutes, then take a short break!</p>
+          <p className="text-xs">Focus for 25 minutes, then take a short break!</p>
         </motion.section>
 
         <AnimatePresence>
@@ -184,7 +184,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
       >
-        <p className="text-sm text-white">© 2026 Project Lotus</p>
+        <p className="text-sm text-foreground">© 2026 Project Lotus</p>
       </motion.footer>
     </div>
   );

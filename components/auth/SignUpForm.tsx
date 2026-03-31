@@ -128,7 +128,9 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
       {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>Passwords do not match</p>}
       <p className="ent-link" onClick={() => handleSwitchAuthWindow("login")}>Already have an account? Login</p>
 
-      <button className="ent-button" onClick={() => setIsSignUpWindowDisplayed(false)}><X /></button>
+      <button className="ent-button" onClick={() => setIsSignUpWindowDisplayed(false)}>
+        <X className="w-4 h-4" />
+      </button>
     </motion.section>
   )
 }

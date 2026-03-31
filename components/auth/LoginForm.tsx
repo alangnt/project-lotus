@@ -76,7 +76,9 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
       {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>Invalid email or password</p>}
       <p className="ent-link" onClick={() => handleSwitchAuthWindow("signup")}>Don&apos;t have an account? Sign up</p>
 
-      <button className="ent-button" onClick={() => setIsLoginWindowDisplayed(false)}><X /></button>
+      <button className="ent-button" onClick={() => setIsLoginWindowDisplayed(false)}>
+        <X className="w-4 h-4" />
+      </button>
     </motion.section>
   )
 }
