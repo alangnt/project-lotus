@@ -107,6 +107,7 @@ export default function Home() {
         fill={theme === "light" ? "#252525" : "#ffffff"}
         className="bg-background"
       ></BGPattern>
+
       <header className="flex justify-center items-center text-white p-2">
         <motion.div
           initial={{ opacity: 0 }}
@@ -115,7 +116,7 @@ export default function Home() {
           transition={{ duration: 0.05, ease: "easeInOut" }}
           className="flex items-center justify-center"
         >
-          <div className="flex items-center justify-center text-foreground hover:text-yellow-500 dark:hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+          <div className="flex items-center justify-center text-foreground hover:text-yellow-500 dark:hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer backdrop-blur-2xl" onClick={handleTheme}>
             <h1 className="text-2xl font-bold">Project Lotus</h1>
             {theme === "light" ? <Sun className="w-min h-min" /> : <Moon className="w-min h-min" />}
           </div>
