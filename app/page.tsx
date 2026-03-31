@@ -34,8 +34,7 @@ export default function Home() {
   
   const addPointsMutation = useAddPoints();
 
-  const [loginWindow, setLoginWindow] = useState(false);
-  const [signupWindow, setSignupWindow] = useState(false);
+  const [authWindow, setAuthWindow] = useState<"login" | "signup" | null>(null);
   const [profileWindow, setProfileWindow] = useState(false);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ export default function Home() {
         points: 100 
       });
     } else {
-      setLoginWindow(true);
+      setAuthWindow("login");
     }
   }, [authenticated, session?.user?.id, addPointsMutation]);
   
@@ -84,8 +83,7 @@ export default function Home() {
   };
 
   const handleSwitchAuthWindow = (target: "login" | "signup") => {
-    setLoginWindow(!!(target === "login"));
-    setSignupWindow(!!(target !== "login"));
+    setAuthWindow(target);
   }
 
   useEffect(() => {
@@ -142,7 +140,7 @@ export default function Home() {
               <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
             </div>
           ) : (
-            <button className="ent-button" onClick={() => setLoginWindow(true)}>
+            <button className="ent-button" onClick={() => setAuthWindow("login")}>
               <LogIn className="w-4 h-4" />
             </button>
           )}
@@ -165,15 +163,12 @@ export default function Home() {
           <p className="text-xs">Focus for 25 minutes, then take a short break!</p>
         </motion.section>
 
-        <AnimatePresence>
-          {loginWindow && (
-            <LoginFormComponent setIsLoginWindowDisplayed={setLoginWindow} handleSwitchAuthWindow={handleSwitchAuthWindow}></LoginFormComponent>
+        <AnimatePresence mode="wait">
+          {authWindow === "login" && (
+            <LoginFormComponent key="login" setIsLoginWindowDisplayed={() => setAuthWindow(null)} handleSwitchAuthWindow={handleSwitchAuthWindow} />
           )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {signupWindow && (
-            <SignUpFormComponent setIsSignUpWindowDisplayed={setSignupWindow} handleSwitchAuthWindow={handleSwitchAuthWindow}></SignUpFormComponent>
+          {authWindow === "signup" && (
+            <SignUpFormComponent key="signup" setIsSignUpWindowDisplayed={() => setAuthWindow(null)} handleSwitchAuthWindow={handleSwitchAuthWindow} />
           )}
         </AnimatePresence>
       </main>

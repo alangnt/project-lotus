@@ -76,9 +76,9 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
   return (
     <motion.section 
       className="flex flex-col items-center justify-between gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5 text-foreground"
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
+      exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
       <h2 className="text-2xl font-bold">Sign Up</h2>
