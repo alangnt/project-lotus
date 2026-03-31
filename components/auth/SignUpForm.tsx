@@ -75,7 +75,7 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
 
   return (
     <motion.section 
-      className="flex flex-col items-center justify-between gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5"
+      className="flex flex-col items-center justify-between gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5 text-foreground"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
@@ -84,19 +84,51 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
       <h2 className="text-2xl font-bold">Sign Up</h2>
 
       <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
-        <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="ent_input" required/>
-        <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="ent_input" required/>
-        <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="ent_input" required/>
-        <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="ent_input" required/>
-        <button type="submit" className="flex items-center justify-center gap-2 bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">
+        <input 
+          type="text" 
+          placeholder="Username" 
+          name="username" 
+          value={formDataSignup.username} 
+          onChange={handleFormChangeSignUp} 
+          className="ent-input" 
+          required
+        />
+        <input 
+          type="email" 
+          placeholder="Email" 
+          name="email" 
+          value={formDataSignup.email} 
+          onChange={handleFormChangeSignUp} 
+          className="ent-input" 
+          required
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          name="password" 
+          value={formDataSignup.password} 
+          onChange={handleFormChangeSignUp} 
+          className="ent-input" 
+          required
+        />
+        <input 
+          type="password" 
+          placeholder="Confirm Password" 
+          name="confirmPassword" 
+          value={formDataSignup.confirmPassword} 
+          onChange={handleFormChangeSignUp} 
+          className="ent-input" 
+          required
+        />
+        <button type="submit" className="ent-button ent-button_flex">
           <LogIn className="w-4 h-4" /> Sign Up
         </button>
       </form>
 
       {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>Passwords do not match</p>}
-      <p className="text-xs text-white hover:underline transition-all duration-200 cursor-pointer" onClick={() => handleSwitchAuthWindow("login")}>Already have an account? Login</p>
+      <p className="ent-link" onClick={() => handleSwitchAuthWindow("login")}>Already have an account? Login</p>
 
-      <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setIsSignUpWindowDisplayed(false)}><X /></button>
+      <button className="ent-button" onClick={() => setIsSignUpWindowDisplayed(false)}><X /></button>
     </motion.section>
   )
 }

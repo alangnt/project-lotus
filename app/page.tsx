@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "motion/react";
 
 import { Sun, Moon, Play, RotateCcw, Pause, LogIn } from "lucide-react";
 
+import { BGPattern } from "@/components/background/BGPattern";
+
 // Import TanStack Query hooks
 import { useUser, useAddPoints } from "./hooks/useUser";
 import LoginFormComponent from "@/components/auth/LoginForm";
@@ -98,7 +100,13 @@ export default function Home() {
   };
 
   return (
-    <div className={`flex flex-col min-h-screen bg-background`}>
+    <div className={`flex flex-col min-h-screen`}>
+      <BGPattern 
+        variant="dots" 
+        mask="fade-edges"
+        fill={theme === "light" ? "#252525" : "#ffffff"}
+        className="bg-background"
+      ></BGPattern>
       <header className="flex justify-center items-center text-white p-2">
         <motion.div
           initial={{ opacity: 0 }}

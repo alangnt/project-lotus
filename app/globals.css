@@ -4,19 +4,35 @@
                                                                                                                                                                
   :root {         
     --background: #ffffff;
-    --foreground: #171717;
+    --foreground: #000000;
   }
 
   .dark {
-    --background: #171717;
+    --background: #000000;
     --foreground: #ffffff;                                                                                                                                     
   }
                                                                                                                                                                
-  @theme inline { 
+  @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
   }
 
-  .ent_input {
+  body {
+    background-color: var(--background);
+  }
+
+  .ent-input {
     @apply bg-foreground/10 backdrop-blur-lg rounded-md p-3 hover:bg-foreground/20 hover:scale-101 transition-all duration-100 placeholder:text-foreground/60 placeholder:text-xs;
+  }
+
+  .ent-button {
+    @apply bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-101 transition-all duration-200 cursor-pointer;
+  }
+
+  .ent-button_flex {
+    @apply flex items-center justify-center gap-2;
+  }
+
+  .ent-link {
+    @apply text-xs hover:underline transition-all duration-100 cursor-pointer;
   }

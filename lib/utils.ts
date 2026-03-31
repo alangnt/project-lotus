@@ -39,3 +39,10 @@ export function exclude<T extends Record<string, any>, K extends keyof T>(
   }
   return result;
 }
+
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
