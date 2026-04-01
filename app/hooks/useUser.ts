@@ -31,30 +31,6 @@ export function useUser(userId: number | undefined) {
   });
 }
 
-// Update user profile mutation
-export function useUpdateUser() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (formData: FormData) => {
-      const response = await fetch("/api/update-user", {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update user");
-      }
-      return response.json();
-    },
-    onSuccess: (data, variables) => {
-      // Get username from the formData to get the user ID
-      const username = variables.get("username");
-      // Invalidate and refetch user data after update
-      queryClient.invalidateQueries({ queryKey: userKeys.all });
-    },
-  });
-}
-
 // Add points mutation
 export function useAddPoints() {
   const queryClient = useQueryClient();
