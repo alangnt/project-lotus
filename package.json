@@ -6,15 +6,14 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "knip": "knip"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
     "@vercel/blob": "^2.0.1",
     "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
-    "cookie": "^1.1.1",
-    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.563.0",
     "motion": "^12.29.2",
     "next": "16.1.6",
@@ -28,17 +27,14 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@types/bcrypt": "^6.0.0",
-    "@types/cookie": "^1.0.0",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.1.0",
+    "@types/node": "^25.5.0",
     "@types/pg": "^8.16.0",
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3",
-    "eslint": "^9.39.2",
-    "eslint-config-next": "16.1.6",
+    "knip": "^6.1.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "overrides": {
     "@types/react": "19.2.10",

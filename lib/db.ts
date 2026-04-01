@@ -35,7 +35,7 @@ export function getPool(): Pool {
 /**
  * Close the database pool (useful for graceful shutdown)
  */
-export async function closePool(): Promise<void> {
+async function closePool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;

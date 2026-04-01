@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Password validation schema
  * Requires minimum 8 characters with at least one uppercase, lowercase, number, and special character
  */
-export const passwordSchema = z
+const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
@@ -15,7 +15,7 @@ export const passwordSchema = z
 /**
  * Email validation schema
  */
-export const emailSchema = z
+const emailSchema = z
   .string()
   .email('Invalid email address')
   .toLowerCase();

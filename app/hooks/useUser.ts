@@ -11,7 +11,7 @@ export interface User {
 }
 
 // Query keys for consistent cache management
-export const userKeys = {
+const userKeys = {
   all: ["users"] as const,
   detail: (id: number) => [...userKeys.all, id] as const,
 };

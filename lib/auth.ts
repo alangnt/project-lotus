@@ -36,6 +36,6 @@ export async function isAuthorized(userId: number): Promise<boolean> {
 /**
  * Get the current session or null if not authenticated
  */
-export async function getSession() {
+async function getSession() {
   return await getServerSession(authOptions);
 }
