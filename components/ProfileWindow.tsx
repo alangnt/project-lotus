@@ -60,6 +60,8 @@ export default function ProfileWindowComponent({ user, setIsProfileWindowDisplay
                 <input type="text" placeholder="Last Name" name="lastName" defaultValue={user.last_name} className="ent-input" />
             </div>
 
+            {errorMessage && <p className={`text-xs text-red-500 font-bold`}>{errorMessage}</p>}
+
             <div className="flex items-center justify-center gap-2">
               <button type="submit" disabled={isSubmitting} className="ent-button disabled:opacity-50">
                 {isSubmitting ? 'Saving...' : 'Save'}

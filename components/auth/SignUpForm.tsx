@@ -98,7 +98,7 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
         </button>
       </Form>
 
-      {errorMessage && <p className={`text-xs text-red-800 dark:text-red-500 font-bold`}>{errorMessage}</p>}
+      {errorMessage && <p className={`text-xs text-red-500 font-bold`}>{errorMessage}</p>}
       <p className="ent-link" onClick={() => handleSwitchAuthWindow("login")}>Already have an account? Login</p>
 
       <button className="ent-button" onClick={() => setIsSignUpWindowDisplayed(false)}>
