@@ -23,7 +23,7 @@ const emailSchema = z
 /**
  * Username validation schema
  */
-export const usernameSchema = z
+const usernameSchema = z
   .string()
   .min(3, 'Username must be at least 3 characters')
   .max(30, 'Username must be less than 30 characters')
@@ -58,7 +58,7 @@ export const updateUserSchema = z.object({
 /**
  * Points update schema
  */
-export const pointsSchema = z.object({
+const pointsSchema = z.object({
   points: z.number().int().positive(),
 });
 
@@ -70,7 +70,7 @@ export const userIdSchema = z.coerce.number().int().positive();
 /**
  * Environment variables validation
  */
-export const envSchema = z.object({
+const envSchema = z.object({
   POSTGRES_URL: z.string().url(),
   NEXTAUTH_SECRET: z.string().min(32),
   NEXTAUTH_URL: z.string().url(),
@@ -80,7 +80,7 @@ export const envSchema = z.object({
 /**
  * Validate environment variables on startup
  */
-export function validateEnv() {
+function validateEnv() {
   try {
     envSchema.parse({
       POSTGRES_URL: process.env.POSTGRES_URL,

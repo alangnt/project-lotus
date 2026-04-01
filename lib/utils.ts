@@ -29,7 +29,7 @@ export function handleValidationError(error: z.ZodError) {
 /**
  * Exclude fields from an object
  */
-export function exclude<T extends Record<string, any>, K extends keyof T>(
+function exclude<T extends Record<string, any>, K extends keyof T>(
   obj: T,
   ...keys: K[]
 ): Omit<T, K> {
