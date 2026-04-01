@@ -14,25 +14,19 @@ export async function POST(request: NextRequest) {
         const user = await requireAuth();
 
         const formData = await request.formData();
-        const file = formData.get('avatar_url') as File | null;
-        const username = formData.get('username') as string | null;
-        const first_name = formData.get('first_name') as string | null;
-        const last_name = formData.get('last_name') as string | null;
+        const file = formData.get('avatarUrl') as File | null;
+        const first_name = formData.get('firstName') as string | null;
+        const last_name = formData.get('lastName') as string | null;
 
         // Validate input
         const validationResult = updateUserSchema.safeParse({
-            username,
+            username: user.username,
             first_name: first_name || undefined,
             last_name: last_name || undefined,
         });
 
         if (!validationResult.success) {
             return handleValidationError(validationResult.error);
-        }
-
-        // Check authorization - users can only update their own profile
-        if (user.username !== username) {
-            return errorResponse('Forbidden: You can only update your own profile', 403);
         }
 
         // Validate file if provided
@@ -51,7 +45,7 @@ export async function POST(request: NextRequest) {
 
         let avatarUrl = null;
         if (file) {
-            const filename = `${username}-${Date.now()}${path.extname(file.name)}`;
+            const filename = `${user.username}-${Date.now()}${path.extname(file.name)}`;
             const blob = await put(filename, file, {
                 access: 'public',
             });
@@ -86,7 +80,7 @@ export async function POST(request: NextRequest) {
 
         // Remove trailing comma and add WHERE clause
         query = query.slice(0, -1) + ` WHERE username = $${paramCount} RETURNING avatar_url, first_name, last_name`;
-        values.push(username);
+        values.push(user.username);
 
         const result = await pool.query(query, values);
         

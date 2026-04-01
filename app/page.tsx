@@ -130,14 +130,14 @@ export default function Home() {
         </AnimatePresence>
 
         <motion.section 
-          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5 text-foreground"
+          className="flex flex-col items-center justify-center gap-4 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-140 w-90 text-foreground"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           {authenticated ? (
             <div className="flex items-center justify-center gap-2">
-              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-white/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
+              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-foreground/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
             </div>
           ) : (
             <button className="ent-button" onClick={() => setAuthWindow("login")}>

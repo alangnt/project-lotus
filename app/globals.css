@@ -21,8 +21,12 @@
     background-color: var(--background);
   }
 
+  .ent-section {
+    @apply flex flex-col items-center justify-between gap-4 bg-foreground/10 text-foreground backdrop-blur-lg rounded-lg p-6 h-140 w-90;
+  }
+
   .ent-input {
-    @apply bg-foreground/10 backdrop-blur-lg rounded-md p-3 hover:bg-foreground/20 hover:scale-101 transition-all duration-100 placeholder:text-foreground/60 placeholder:text-xs;
+    @apply bg-foreground/10 backdrop-blur-lg rounded-md p-3 hover:bg-foreground/20 hover:scale-101 transition-all duration-100 placeholder:text-foreground/60 placeholder:text-xs w-full;
   }
 
   .ent-button {

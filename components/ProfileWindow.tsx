@@ -1,47 +1,42 @@
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, X } from "lucide-react";
-import { User, useUpdateUser } from "@/app/hooks/useUser";
+import { User } from "@/app/hooks/useUser";
+import Form from "next/form";
 
 export default function ProfileWindowComponent({ user, setIsProfileWindowDisplayed }
   : { user: User; setIsProfileWindowDisplayed: (value: boolean) => void }) {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [editProfile, setEditProfile] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const updateUserMutation = useUpdateUser();
+  const handleUpdateUser = async (data: FormData) => {
+    setIsSubmitting(true);
 
-  const [formDataUpdateUser, setFormDataUpdateUser] = useState({
-    first_name: "",
-    last_name: "",
-    avatar_url: "",
-  });
+    console.log(data.get("avatarUrl"));
 
-  const handleFormChangeUpdateUser = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormDataUpdateUser({ ...formDataUpdateUser, [e.target.name]: e.target.value });
-  }
+    try {
+      const response = await fetch("/api/update-user", {
+        method: "POST",
+        body: data
+      });
 
-  // Simplified handleUpdateUser using TanStack Query mutation
-  const handleUpdateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('username', user?.username || '');
-    formData.append('first_name', formDataUpdateUser.first_name);
-    formData.append('last_name', formDataUpdateUser.last_name);
-
-    const fileInput = document.getElementById('avatar') as HTMLInputElement;
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-      formData.append('avatar_url', fileInput.files[0]);
-    }
-
-    updateUserMutation.mutate(formData, {
-      onSuccess: () => {
+      if (response.ok) {
         setEditProfile(false);
-      },
-      onError: (error) => {
-        console.error('Error updating user:', error);
-      },
-    });
+        window.location.reload();
+      } else {
+        const result = await response.json();
+        console.warn('Error editing your profile:', result.error);
+        setErrorMessage(result.error);
+      }
+
+      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Failed to update user: ", error);
+      setErrorMessage("An error has occured. Please try again later");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -53,49 +48,49 @@ export default function ProfileWindowComponent({ user, setIsProfileWindowDisplay
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
       {editProfile ? (
-        <section className="flex flex-col items-center justify-between gap-8 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
-            <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-foreground/10 backdrop-blur-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
-          </div>   
+        <section className="ent-section">
+          <Form action={(data) => handleUpdateUser(data)} className="flex flex-col items-center justify-between gap-8 grow">
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+              <input type="file" accept="image/*" name="avatarUrl" className="ent-input text-sm cursor-pointer" />
+            </div>  
 
-          <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
             <div className="flex flex-col items-center justify-center gap-6 grow">
-                <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
-                <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                <input type="text" placeholder="First Name" name="firstName" defaultValue={user.first_name} className="ent-input" />
+                <input type="text" placeholder="Last Name" name="lastName" defaultValue={user.last_name} className="ent-input" />
             </div>
 
             <div className="flex items-center justify-center gap-2">
-              <button type="submit" disabled={updateUserMutation.isPending} className="bg-foreground/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 disabled:opacity-50">
-                {updateUserMutation.isPending ? 'Saving...' : 'Save'}
+              <button type="submit" disabled={isSubmitting} className="ent-button disabled:opacity-50">
+                {isSubmitting ? 'Saving...' : 'Save'}
               </button>
-              <button type="button" onClick={() => setEditProfile(false)} className="bg-foreground/10 backdrop-blur-lg rounded-lg py-2 px-4 hover:bg-foreground/20 hover:scale-105 transition-all duration-200">Cancel</button>
+              <button type="button" onClick={() => setEditProfile(false)} className="ent-button">Cancel</button>
             </div>
-          </form>
+          </Form>
         </section>
       ) : (
-        <section className="flex flex-col items-center justify-between gap-12 bg-foreground/10 backdrop-blur-lg rounded-lg p-6 h-120 w-87.5">
-          <div className="flex flex-col items-center justify-center w-full gap-4">
-              <div className="flex items-center justify-end self-end bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
-                <Pencil className="w-4 h-4" />
-              </div>
-
-              <div className="flex flex-col items-center justify-center">
-                <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
-              </div>
-                
-              <div className="flex flex-col items-center justify-center">
-                <h3 className="text-xl font-bold">{user?.username}</h3>
-                <p className="text-lg text-white/80">{user?.points} points</p>
-              </div>      
-          </div>
-          
-          <div className="flex flex-col items-start justify-start gap-2 grow w-full">
-              <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
-              <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
+        <section className="ent-section gap-12!">
+          <div className="ent-button" onClick={() => setEditProfile(true)}>
+            <Pencil className="w-4 h-4" />
           </div>
 
-          <button className="bg-foreground/10 backdrop-blur-lg rounded-lg p-2 hover:bg-foreground/20 hover:scale-105 transition-all duration-200" onClick={() => setIsProfileWindowDisplayed(false)}><X /></button>
+          <div className="flex flex-col items-center justify-center w-full gap-4 grow">
+            <div className="flex flex-col items-center justify-center">
+              <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+            </div>
+              
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="text-xl font-bold">{user?.username}</h3>
+              <p className="text-lg font-light">{user?.points} points</p>
+            </div>      
+
+            <div className="flex flex-col items-start justify-start gap-2 mt-8">
+              <p>First Name: <span>{user?.first_name || "Not set"}</span></p>
+              <p>Last Name: <span>{user?.last_name || "Not set"}</span></p>
+            </div>
+          </div>
+
+          <button className="ent-button" onClick={() => setIsProfileWindowDisplayed(false)}><X /></button>
         </section>
       )}
     </motion.div>
