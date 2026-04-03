@@ -135,15 +135,22 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          {authenticated ? (
-            <div className="flex items-center justify-center gap-2">
-              <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-foreground/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
-            </div>
+          {userLoading ? (
+            <div>Loading...</div>
           ) : (
-            <button className="ent-button" onClick={() => setAuthWindow("login")}>
-              <LogIn className="w-4 h-4" />
-            </button>
+            <>
+              {authenticated ? (
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-foreground/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
+                </div>
+              ) : (
+                <button className="ent-button" onClick={() => setAuthWindow("login")}>
+                  <LogIn className="w-4 h-4" />
+                </button>
+              )}
+            </>
           )}
+          
 
           <div className="flex items-center justify-center text-[5rem] font-bold cursor-default">
             <span>{minutes.toString().padStart(2, '0')}</span>:<span>{seconds.toString().padStart(2, '0')}</span>
