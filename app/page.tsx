@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon, Play, RotateCcw, Pause, LogIn } from "lucide-react";
 
 import { BGPattern } from "@/components/background/BGPattern";
+import Link from "next/link";
 
 // Import TanStack Query hooks
 import { useUser, useAddPoints } from "./hooks/useUser";
@@ -186,7 +187,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
       >
-        <p className="text-sm text-foreground">© 2026 Project Lotus</p>
+        <p className="text-sm text-foreground">© 2026 Project Lotus - <Link href={"https://linkedin.com/in/alan-geirnaert"} target="_blank" className="underline">Alan Geirnaert</Link></p>
       </motion.footer>
     </div>
   );
