@@ -123,7 +123,7 @@ export default function Home() {
         </motion.div>
       </header>
 
-      <main className="grow max-sm:flex-col flex items-center justify-center relative max-md:gap-4 gap-6 max-sm:my-12">
+      <main className="grow max-sm:flex-col-reverse flex items-center justify-center relative max-md:gap-4 gap-6 max-sm:my-12">
         <AnimatePresence mode="wait">
           {profileWindow && (
             <ProfileWindowComponent user={user!} setIsProfileWindowDisplayed={setProfileWindow}></ProfileWindowComponent>
