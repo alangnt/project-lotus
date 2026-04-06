@@ -152,8 +152,8 @@ export default function Home() {
             </>
           )}
           
-
-          <div className="flex items-center justify-center text-[5rem] font-bold cursor-default">
+          {/* Timer */}
+          <div className="flex items-center justify-center text-[5rem] font-semibold cursor-default tracking-wider">
             <span>{minutes.toString().padStart(2, '0')}</span>:<span>{seconds.toString().padStart(2, '0')}</span>
           </div>
 
