@@ -145,7 +145,7 @@ export default function Home() {
                   <p className="text-lg font-bold">Welcome back, <span className={`cursor-pointer underline transition-all duration-200 ${theme === "light" ? "hover:text-yellow-500" : "hover:text-blue-500"}`} onClick={() => setProfileWindow(true)}>{user?.username}</span> ! <span className="text-xs text-foreground/80 hover:underline cursor-pointer" onClick={() => signOut()}>Logout</span></p>
                 </div>
               ) : (
-                <button className="ent-button" onClick={() => setAuthWindow("login")}>
+                <button className="ent-button_background" onClick={() => setAuthWindow("login")}>
                   <LogIn className="w-4 h-4" />
                 </button>
               )}

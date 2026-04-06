@@ -54,7 +54,7 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
           required
         />
 
-        <button type="submit" className="ent-button ent-button_flex">
+        <button type="submit" className="ent-button_flex text-sm">
           <LogIn className="w-4 h-4" /> Login
         </button>
       </Form>
