@@ -93,8 +93,8 @@ export default function SignUpFormComponent({ setIsSignUpWindowDisplayed, handle
           required
         />
 
-        <button type="submit" className="ent-button_flex text-sm">
-          <LogIn className="w-4 h-4" /> Sign Up
+        <button type="submit" className="ent-button ent-button_background ent-button_flex text-sm">
+          <LogIn className="w-3 h-3" /> Sign Up
         </button>
       </Form>
 

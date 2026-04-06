@@ -33,9 +33,9 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <div className="flex flex-col items-center justify-center text-center">
-        <h2 className="text-2xl font-bold">Login</h2>
-        <p className="text-xs text-foreground">Login to your account to start tracking your focus time and earn points!</p>
+      <div className="flex flex-col items-center justify-center text-center mx-4">
+        <h2 className="text-2xl font-bold">Welcome back!</h2>
+        <p className="text-xs text-foreground">Login to your account to start tracking your focus time and earn points</p>
       </div>
 
       <Form action={(data) => handleLogin(data)} className="flex flex-col items-center justify-center gap-8 grow">
@@ -54,7 +54,7 @@ export default function LoginFormComponent({ setIsLoginWindowDisplayed, handleSw
           required
         />
 
-        <button type="submit" className="ent-button_flex text-sm">
+        <button type="submit" className="ent-button ent-button_background ent-button_flex text-sm">
           <LogIn className="w-4 h-4" /> Login
         </button>
       </Form>
