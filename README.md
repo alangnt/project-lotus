@@ -14,4 +14,4 @@ Welcome to Project Lotus, a serene and efficient platform designed to elevate yo
 - Free and Accessible: Easily accessible from any device, Project Lotus is completely free to use, ensuring everyone can benefit from an optimized study experience.
 
 # Join Our Community
-Become part of the Project Lotus community and transform your study habits today. Visit us now at https://projectlotus.online/ and start your journey towards more productive and focused study sessions.
+Become part of the Project Lotus community and transform your study habits today. Visit us now at https://project-lotus-8pfq.vercel.app/ and start your journey towards more productive and focused study sessions.
