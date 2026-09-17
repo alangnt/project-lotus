@@ -27,14 +27,14 @@ export default function Home() {
 
   const { data: session, status } = useSession();
   const authenticated = status === "authenticated" && !!session?.user;
-  
+
   // TanStack Query hooks - replaces manual fetch + useState pattern
-  const { 
-    data: user, 
+  const {
+    data: user,
     isLoading: userLoading,
-    error: userError 
+    error: userError
   } = useUser(authenticated ? session?.user?.id as number : undefined);
-  
+
   const updateUserMutation = useUpdateUser();
   const addPointsMutation = useAddPoints();
 
@@ -70,15 +70,15 @@ export default function Home() {
   // Simplified handlePoints using TanStack Query mutation
   const handlePoints = useCallback(async () => {
     if (authenticated && session?.user?.id) {
-      addPointsMutation.mutate({ 
-        userId: session.user.id as number, 
-        points: 100 
+      addPointsMutation.mutate({
+        userId: session.user.id as number,
+        points: 100
       });
     } else {
       setLoginWindow(true);
     }
   }, [authenticated, session?.user?.id, addPointsMutation]);
-  
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isRunning) {
@@ -139,9 +139,9 @@ export default function Home() {
 
   const handlePasswordNoMatch = () => {
     setNoMatch(true);
-    
+
     setTimeout(() => {
-        setNoMatch(false);
+      setNoMatch(false);
     }, 3000);
   }
 
@@ -149,13 +149,13 @@ export default function Home() {
     e.preventDefault();
 
     const result = await signIn('credentials', {
-        email: formDataLogin.email,
-        password: formDataLogin.password,
-        redirect: false,
+      email: formDataLogin.email,
+      password: formDataLogin.password,
+      redirect: false,
     });
 
     if (result?.ok) {
-        setLoginWindow(false);
+      setLoginWindow(false);
     } else {
       setErrorMessage(true);
 
@@ -168,48 +168,48 @@ export default function Home() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-      if (formDataSignup.password !== formDataSignup.confirmPassword) {
-          handlePasswordNoMatch();
-          return;
-      }
-    
-      try {
-          const response = await fetch('/api/auth/register', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                username: formDataSignup.username,
-                email: formDataSignup.email,
-                password: formDataSignup.password,
-                confirmPassword: formDataSignup.confirmPassword,
-              })
-          });
-  
-          if (response.ok) {
-              const result = await signIn('credentials', {
-                username: formDataSignup.username,
-                email: formDataSignup.email,
-                password: formDataSignup.password,
-                redirect: false,
-              });
-          
-              if (result?.ok) {
-                  setSignupWindow(false);
-              }
+    if (formDataSignup.password !== formDataSignup.confirmPassword) {
+      handlePasswordNoMatch();
+      return;
+    }
 
-              const data = await response.json();
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: formDataSignup.username,
+          email: formDataSignup.email,
+          password: formDataSignup.password,
+          confirmPassword: formDataSignup.confirmPassword,
+        })
+      });
 
-              const { email, username } = data;
-              setFormDataSignup({ ...formDataSignup, email, username });
-          } else {
-              const errorData = await response.json();
-              console.error('Error signing up:', errorData.message);
-          }
-        } catch (error) {
-        console.error('Error signing up:', error);
+      if (response.ok) {
+        const result = await signIn('credentials', {
+          username: formDataSignup.username,
+          email: formDataSignup.email,
+          password: formDataSignup.password,
+          redirect: false,
+        });
+
+        if (result?.ok) {
+          setSignupWindow(false);
+        }
+
+        const data = await response.json();
+
+        const { email, username } = data;
+        setFormDataSignup({ ...formDataSignup, email, username });
+      } else {
+        const errorData = await response.json();
+        console.error('Error signing up:', errorData.message);
       }
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
   };
 
   // Simplified handleUpdateUser using TanStack Query mutation
@@ -253,14 +253,14 @@ export default function Home() {
               {editProfile ? (
                 <section className="flex flex-col items-center justify-between gap-8 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
+                    <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full" />
                     <input id="avatar" type="file" accept="image/*" onChange={handleFormChangeUpdateUser} name="avatar_url" className="w-full rounded-lg bg-white/10 backdrop-blur-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" />
-                  </div>   
+                  </div>
 
                   <form onSubmit={handleUpdateUser} className="flex flex-col items-center justify-between gap-8 grow">
                     <div className="flex flex-col items-center justify-center gap-6 grow">
-                        <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
-                        <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                      <input type="text" placeholder="First Name" name="first_name" value={formDataUpdateUser.first_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
+                      <input type="text" placeholder="Last Name" name="last_name" value={formDataUpdateUser.last_name} onChange={handleFormChangeUpdateUser} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" />
                     </div>
 
                     <div className="flex items-center justify-center gap-2">
@@ -274,23 +274,23 @@ export default function Home() {
               ) : (
                 <section className="flex flex-col items-center justify-between gap-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]">
                   <div className="flex flex-col items-center justify-center w-full gap-4">
-                      <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
-                        <Pencil className="w-4 h-4" />
-                      </div>
+                    <div className="flex items-center justify-end self-end bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 cursor-pointer" onClick={() => setEditProfile(true)}>
+                      <Pencil className="w-4 h-4" />
+                    </div>
 
-                      <div className="flex flex-col items-center justify-center">
-                        <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full"/>
-                      </div>
-                        
-                      <div className="flex flex-col items-center justify-center">
-                        <h3 className="text-xl font-bold">{user?.username}</h3>
-                        <p className="text-lg text-white/80">{user?.points} points</p>
-                      </div>      
+                    <div className="flex flex-col items-center justify-center">
+                      <Image src={user?.avatar_url || "img/user-round.svg"} alt="Profile" width={75} height={75} className="rounded-full" />
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center">
+                      <h3 className="text-xl font-bold">{user?.username}</h3>
+                      <p className="text-lg text-white/80">{user?.points} points</p>
+                    </div>
                   </div>
-                  
+
                   <div className="flex flex-col items-start justify-start gap-2 grow w-full">
-                      <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
-                      <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
+                    <p>First Name: <span className="text-white/80">{user?.first_name || "Not set"}</span></p>
+                    <p>Last Name: <span className="text-white/80">{user?.last_name || "Not set"}</span></p>
                   </div>
 
                   <button className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200" onClick={() => setProfileWindow(false)}><X /></button>
@@ -300,7 +300,7 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        <motion.section 
+        <motion.section
           className="flex flex-col items-center justify-center gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -337,7 +337,7 @@ export default function Home() {
 
         <AnimatePresence>
           {loginWindow && (
-            <motion.section 
+            <motion.section
               className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -350,8 +350,8 @@ export default function Home() {
               </div>
 
               <form className="flex flex-col items-center justify-center gap-8 grow" onSubmit={handleLogin}>
-                <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="email" placeholder="Email" name="email" value={formDataLogin.email} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
+                <input type="password" placeholder="Password" name="password" value={formDataLogin.password} onChange={handleFormChangeLogin} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
                 <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
                   <LogIn className="w-4 h-4" /> Login
                 </button>
@@ -367,7 +367,7 @@ export default function Home() {
 
         <AnimatePresence>
           {signupWindow && (
-            <motion.section 
+            <motion.section
               className="flex flex-col items-center justify-between gap-4 bg-white/10 backdrop-blur-lg rounded-lg p-6 h-[480px] w-[350px]"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -377,10 +377,10 @@ export default function Home() {
               <h2 className="text-2xl font-bold">Sign Up</h2>
 
               <form className="flex flex-col items-center justify-center gap-4 grow" onSubmit={handleSignup}>
-                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
-                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required/>
+                <input type="text" placeholder="Username" name="username" value={formDataSignup.username} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
+                <input type="email" placeholder="Email" name="email" value={formDataSignup.email} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
+                <input type="password" placeholder="Password" name="password" value={formDataSignup.password} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
+                <input type="password" placeholder="Confirm Password" name="confirmPassword" value={formDataSignup.confirmPassword} onChange={handleFormChangeSignUp} className="bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200 placeholder:text-white/80 text-lg" required />
                 <button type="submit" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-lg rounded-lg p-2 hover:bg-white/20 hover:scale-105 transition-all duration-200">
                   <LogIn className="w-4 h-4" /> Sign Up
                 </button>
@@ -405,33 +405,33 @@ function Header({ handleTheme, theme }: { handleTheme: () => void, theme: string
   return (
     <header className="flex justify-center items-center text-white p-2">
       <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.05, ease: "easeInOut" }}
-          className="flex items-center justify-center"
-        >
-          <>
-            {theme === "light" ? (
-              <div className="flex items-center justify-center hover:text-yellow-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
-                <h1 className="text-2xl font-bold">Project Lotus</h1>
-                  <Sun className="w-min h-min" />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
-                <h1 className="text-2xl font-bold">Project Lotus</h1>
-                  <Moon className="w-min h-min" />
-              </div>
-            )}
-          </>
-        </motion.div>
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.05, ease: "easeInOut" }}
+        className="flex items-center justify-center"
+      >
+        <>
+          {theme === "light" ? (
+            <div className="flex items-center justify-center hover:text-yellow-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+              <h1 className="text-2xl font-bold">Project Lotus</h1>
+              <Sun className="w-min h-min" />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center hover:text-blue-500 gap-2 hover:bg-gray-200 transition-all duration-300 rounded-full py-1 px-4 cursor-pointer" onClick={handleTheme}>
+              <h1 className="text-2xl font-bold">Project Lotus</h1>
+              <Moon className="w-min h-min" />
+            </div>
+          )}
+        </>
+      </motion.div>
     </header>
   );
 }
 
 function Footer() {
   return (
-    <motion.footer 
+    <motion.footer
       className="flex justify-center items-center px-4 py-2"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -444,13 +444,13 @@ function Footer() {
 
 function BackgroundVideo({ theme }: { theme: string }) {
   return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden z-[-1]">  
+    <div className="fixed inset-0 w-full h-full overflow-hidden z-[-1]">
       <AnimatePresence mode="wait">
-        <motion.video 
+        <motion.video
           key={theme}
-          src={`/background/anim-bg${theme}.mp4`} 
-          autoPlay 
-          muted 
+          src={`/background/anim-bg${theme}.mp4`}
+          autoPlay
+          muted
           loop
           className="absolute top-0 left-0 w-full h-full object-cover"
           initial={{ opacity: 0 }}
@@ -465,15 +465,15 @@ function BackgroundVideo({ theme }: { theme: string }) {
 
 function EmbeddedVideo() {
   return (
-    <div>  
-      <iframe 
-        width="100%" 
-        height="100%" 
-        src="https://www.youtube.com/embed/jfKfPfyJRdk?si=V1yUG-F9Ra1iD2AC&autoplay=1&mute=1" 
-        title="lofi hip hop radio - beats to relax/study to" 
-        frameBorder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share, muted, playsinline" 
-        referrerPolicy="strict-origin-when-cross-origin" 
+    <div>
+      <iframe
+        width="100%"
+        height="100%"
+        src="https://www.youtube.com/embed/rFZHOHl-L8A?si=LIkAK9AaZ7ohTk5t&autoplay=1&mute=1"
+        title="lofi hip hop radio - beats to relax/study to"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share, muted, playsinline"
+        referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
         className="rounded-lg"
       >
